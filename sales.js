@@ -4,7 +4,8 @@ var firstAndPike = {
   minCustomers: 23,
   maxCustomers: 65,
   avgCookiesPerCust: 6.3,
-  salesArray: []
+  salesArray: [],
+  salesUlId: 'firstAndPikeSalesList'
 };
 
 var seaTacAirport = {
@@ -12,7 +13,8 @@ var seaTacAirport = {
   minCustomers: 3,
   maxCustomers: 24,
   avgCookiesPerCust: 1.2,
-  salesArray: []
+  salesArray: [],
+  salesUlId: 'seaTacAirportSalesList'
 };
 
 var seattleCenter = {
@@ -20,7 +22,8 @@ var seattleCenter = {
   minCustomers: 11,
   maxCustomers: 38,
   avgCookiesPerCust: 3.7,
-  salesArray: []
+  salesArray: [],
+  salesUlId: 'seattleCenterSalesList'
 };
 
 var capitolHill = {
@@ -28,7 +31,8 @@ var capitolHill = {
   minCustomers: 20,
   maxCustomers: 38,
   avgCookiesPerCust: 2.3,
-  salesArray: []
+  salesArray: [],
+  salesUlId: 'capitolHillSalesList'
 };
 
 var alki = {
@@ -36,7 +40,8 @@ var alki = {
   minCustomers: 2,
   maxCustomers: 16,
   avgCookiesPerCust: 4.6,
-  salesArray: []
+  salesArray: [],
+  salesUlId: 'alkiSalesList'
 };
 
 function genRandomCust() {
@@ -105,7 +110,7 @@ seattleCenter.genHourlySales();
 capitolHill.genHourlySales();
 alki.genHourlySales();
 
-function insertSalesIntoUl (ulId, text) {//takes <ul> id attr as argument
+function insertLiIntoUl (ulId, text) {//takes <ul> id attr as argument
   var caUl = document.getElementById(ulId);
   var newLiNode = document.createElement('li');
   var newLiTextNode = document.createTextNode(text);
@@ -113,7 +118,32 @@ function insertSalesIntoUl (ulId, text) {//takes <ul> id attr as argument
   caUl.appendChild(newLiNode);
 }
 
-document.onload = function() {
-    //create for loop to generate list elements
-    for ()
-};
+function insertLiIntoUlIter (ulId, array) {
+  console.log('begin insertLiIntoUlIter');
+  var caUl = document.getElementById(ulId);
+  console.log('create var caUl with val ' + caUl);
+  var newLiNode;
+  var newLiTextNode;
+
+  console.log('begin insertLiIntoUl for loop');
+  for (var i = 0; i < array.length; i++) {
+    console.log('ITERATION ' + i);
+    newLiNode = document.createElement('li');
+    console.log('assign var newLiNode with val ' + newLiNode)
+    newLiTextNode = document.createTextNode(array[i]);
+    console.log('assign new var newLiNode with val ' + newLiNode);
+    newLiNode.appendChild(newLiTextNode);
+    caUl.appendChild(newLiNode);
+  }
+  console.log('exit insertLiIntoUlIter');
+}
+
+function insertUponLoad() {
+  console.log('document loaded');
+
+  insertLiIntoUlIter(firstAndPike.salesUlId, firstAndPike.salesArray);
+  insertLiIntoUlIter(seaTacAirport.salesUlId, seaTacAirport.salesArray);
+  insertLiIntoUlIter(seattleCenter.salesUlId, seattleCenter.salesArray);
+  insertLiIntoUlIter(capitolHill.salesUlId, capitolHill.salesArray);
+  insertLiIntoUlIter(alki.salesUlId, alki.salesArray);
+}
