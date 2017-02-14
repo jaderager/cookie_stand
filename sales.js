@@ -77,7 +77,7 @@ function genHourlySales() {
     } else {
       amPmFlag = 1;
       twelveHourTime = i - 12; //convert to 12hr. does not work at noon
-    }
+    } //don't need to make it work for midnight, outside store hours. I'm sure this will become its own Y2K (T2400?) bug should the owner decide to expand business hours to a 24/7 model.
 
     workingString += twelveHourTime; //6 ...
     if (!amPmFlag) {
@@ -98,6 +98,22 @@ seattleCenter.genHourlySales = genHourlySales;
 capitolHill.genHourlySales = genHourlySales;
 alki.genHourlySales = genHourlySales;
 
+//actually assign values to respective salesArray 's
+firstAndPike.genHourlySales();
+seaTacAirport.genHourlySales();
+seattleCenter.genHourlySales();
+capitolHill.genHourlySales();
+alki.genHourlySales();
+
+function insertSalesIntoUl (ulId, text) {//takes <ul> id attr as argument
+  var caUl = document.getElementById(ulId);
+  var newLiNode = document.createElement('li');
+  var newLiTextNode = document.createTextNode(text);
+  newLiNode.appendChild(newLiTextNode);
+  caUl.appendChild(newLiNode);
+}
+
 document.onload = function() {
     //create for loop to generate list elements
+    for ()
 };
