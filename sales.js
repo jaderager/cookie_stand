@@ -1,3 +1,5 @@
+'use strict';
+
 //define objects
 var firstAndPike = {
   location: '1st and Pike',
@@ -75,7 +77,7 @@ function genHourlySales() {
 
     if (i < 12) { //if before noon
       amPmFlag = 0;
-      twelveHourTime = i; 
+      twelveHourTime = i;
     } else if (i === 12) { //if noon
       amPmFlag = 1;
       twelveHourTime = 12; //naturally. value of 0 for below calc would not work.
@@ -91,7 +93,7 @@ function genHourlySales() {
       workingString += 'pm: '; //6pm: ...
     }
 
-    workingString += this.cookiesPerHour() + ' cookies'; //6xm: __ cookies 
+    workingString += this.cookiesPerHour() + ' cookies'; //6xm: __ cookies
 
     this.salesArray.push(workingString);
   }
@@ -110,14 +112,6 @@ seattleCenter.genHourlySales();
 capitolHill.genHourlySales();
 alki.genHourlySales();
 
-function insertLiIntoUl (ulId, text) {//takes <ul> id attr as argument
-  var caUl = document.getElementById(ulId);
-  var newLiNode = document.createElement('li');
-  var newLiTextNode = document.createTextNode(text);
-  newLiNode.appendChild(newLiTextNode);
-  caUl.appendChild(newLiNode);
-}
-
 function insertLiIntoUlIter (ulId, array) {
   console.log('begin insertLiIntoUlIter');
   var caUl = document.getElementById(ulId);
@@ -129,7 +123,7 @@ function insertLiIntoUlIter (ulId, array) {
   for (var i = 0; i < array.length; i++) {
     console.log('ITERATION ' + i);
     newLiNode = document.createElement('li');
-    console.log('assign var newLiNode with val ' + newLiNode)
+    console.log('assign var newLiNode with val ' + newLiNode);
     newLiTextNode = document.createTextNode(array[i]);
     console.log('assign new var newLiNode with val ' + newLiNode);
     newLiNode.appendChild(newLiTextNode);
@@ -138,7 +132,8 @@ function insertLiIntoUlIter (ulId, array) {
   console.log('exit insertLiIntoUlIter');
 }
 
-function insertUponLoad() {
+/* I'm using this function as a wrapper with the onload HTML attr to ensure all list elements are extant by the time it executes. The linter doesn't recognize that it's being used that way. */
+function execUponLoad() { //eslint-disable-line
   console.log('document loaded');
 
   insertLiIntoUlIter(firstAndPike.salesUlId, firstAndPike.salesArray);

@@ -1,0 +1,15 @@
+@import url("16px.css");
+
+* {
+    font-family: 'Lora', serif;
+    background-color: salmon;
+}
+
+body {
+    color: black;
+}
+
+.highlight {
+    font-family: 'Caveat Brush', cursive;
+    color: palegoldenrod;
+}
