@@ -1,109 +1,76 @@
 'use strict';
 
 //define objects
-var firstAndPike = {
-  location: '1st and Pike',
-  minCustomers: 23,
-  maxCustomers: 65,
-  avgCookiesPerCust: 6.3,
-  salesArray: [],
-  salesUlId: 'firstAndPikeSalesList'
-};
 
-var seaTacAirport = {
-  location: 'SeaTac Airport',
-  minCustomers: 3,
-  maxCustomers: 24,
-  avgCookiesPerCust: 1.2,
-  salesArray: [],
-  salesUlId: 'seaTacAirportSalesList'
-};
+function Store(locstring, minCustomers, maxCustomers, avgCookiesPerCust, salesUlId) {
+  this.locstring = locstring;
+  this.minCustomers = minCustomers;
+  this.maxCustomers = maxCustomers;
+  this.avgCookiesPerCust = avgCookiesPerCust;
+  this.salesUlId = salesUlId;
+  this.salesArray = [];
 
-var seattleCenter = {
-  location: 'Seattle Center',
-  minCustomers: 11,
-  maxCustomers: 38,
-  avgCookiesPerCust: 3.7,
-  salesArray: [],
-  salesUlId: 'seattleCenterSalesList'
-};
+  this.genRandomCust = function() {
+    var min = Math.ceil(this.minCustomers);
+    var max = Math.floor(this.maxCustomers);
+    return Math.floor(Math.random() * (max + 1 - min) + min);
+  };
 
-var capitolHill = {
-  location: 'Capitol Hill',
-  minCustomers: 20,
-  maxCustomers: 38,
-  avgCookiesPerCust: 2.3,
-  salesArray: [],
-  salesUlId: 'capitolHillSalesList'
-};
+  this.cookiesPerHour = function cookiesPerHour() {
+    return this.genRandomCust() * this.avgCookiesPerCust;
+  };
 
-var alki = {
-  location: 'Alki',
-  minCustomers: 2,
-  maxCustomers: 16,
-  avgCookiesPerCust: 4.6,
-  salesArray: [],
-  salesUlId: 'alkiSalesList'
-};
+  this.genHourlySales = function genHourlySales() {
 
-function genRandomCust() {
-  var min = Math.ceil(this.minCustomers);
-  var max = Math.floor(this.maxCustomers);
-  return Math.floor(Math.random() * (max + 1 - min) + min);
-}
+    for (var i = 6; i <= 20; i++) {
+      var amPmFlag; //12hr am/pm bit
+      var twelveHourTime; //12hr hour value
+      var workingString = ''; //temp string
 
-firstAndPike.genRandomCust = genRandomCust;
-seaTacAirport.genRandomCust = genRandomCust;
-seattleCenter.genRandomCust = genRandomCust;
-capitolHill.genRandomCust = genRandomCust;
-alki.genRandomCust = genRandomCust;
+      if (i < 12) { //if before noon
+        amPmFlag = 0;
+        twelveHourTime = i;
+      } else if (i === 12) { //if noon
+        amPmFlag = 1;
+        twelveHourTime = 12; //naturally. value of 0 for below calc would not work.
+      } else {
+        amPmFlag = 1;
+        twelveHourTime = i - 12; //convert to 12hr. does not work at noon
+      } //don't need to make it work for midnight, outside store hours. I'm sure this will become its own Y2K (T2400?) bug should the owner decide to expand business hours to a 24/7 model.
 
-function cookiesPerHour() {
-  return this.genRandomCust() * this.avgCookiesPerCust;
-}
+      workingString += twelveHourTime; //6 ...
+      if (!amPmFlag) {
+        workingString += 'am: '; //6am: ...
+      } else if (amPmFlag) {
+        workingString += 'pm: '; //6pm: ...
+      }
 
-firstAndPike.cookiesPerHour = cookiesPerHour;
-seaTacAirport.cookiesPerHour = cookiesPerHour;
-seattleCenter.cookiesPerHour = cookiesPerHour;
-capitolHill.cookiesPerHour = cookiesPerHour;
-alki.cookiesPerHour = cookiesPerHour;
+      workingString += this.cookiesPerHour() + ' cookies'; //6xm: __ cookies
 
-function genHourlySales() {
-
-  for (var i = 6; i <= 20; i++) {
-    var amPmFlag; //12hr am/pm bit
-    var twelveHourTime; //12hr hour value
-    var workingString = ''; //temp string
-
-    if (i < 12) { //if before noon
-      amPmFlag = 0;
-      twelveHourTime = i;
-    } else if (i === 12) { //if noon
-      amPmFlag = 1;
-      twelveHourTime = 12; //naturally. value of 0 for below calc would not work.
-    } else {
-      amPmFlag = 1;
-      twelveHourTime = i - 12; //convert to 12hr. does not work at noon
-    } //don't need to make it work for midnight, outside store hours. I'm sure this will become its own Y2K (T2400?) bug should the owner decide to expand business hours to a 24/7 model.
-
-    workingString += twelveHourTime; //6 ...
-    if (!amPmFlag) {
-      workingString += 'am: '; //6am: ...
-    } else if (amPmFlag) {
-      workingString += 'pm: '; //6pm: ...
+      this.salesArray.push(workingString);
     }
-
-    workingString += this.cookiesPerHour() + ' cookies'; //6xm: __ cookies
-
-    this.salesArray.push(workingString);
-  }
+  };
 }
 
-firstAndPike.genHourlySales = genHourlySales;
-seaTacAirport.genHourlySales = genHourlySales;
-seattleCenter.genHourlySales = genHourlySales;
-capitolHill.genHourlySales = genHourlySales;
-alki.genHourlySales = genHourlySales;
+var firstAndPike = new Store('1st and Pike',
+23,65,6.3,
+'firstAndPikeSalesList');
+
+var seaTacAirport = new Store('SeaTac Airport',
+3,24,1.2,
+'seattleCenterSalesList');
+
+var seattleCenter = new Store('seattle Center',
+11,38,3.7,
+'seattleCenterSalesList');
+
+var capitolHill = new Store('Capitol Hill',
+20,38,2.3,
+'capitolHillSalesList');
+
+var alki = new Store('Alki',
+2,16,4.6,
+'alkiSalesList');
 
 //actually assign values to respective salesArray 's
 firstAndPike.genHourlySales();
