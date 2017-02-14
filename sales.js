@@ -35,7 +35,9 @@ var alki = {
 };
 
 function genRandomCust() {
-  Math.floor(Math.random() * (this.maxCustomers + 1 - this.minCustomers) - this.minCustomers);
+  var min = Math.ceil(this.minCustomers);
+  var max = Math.floor(this.maxCustomers);
+  return Math.floor(Math.random() * (min + 1 - max) + min);
 }
 
 firstAndPike.genRandomCust = genRandomCust;
@@ -43,6 +45,16 @@ seaTacAirport.genRandomCust = genRandomCust;
 seattleCenter.genRandomCust = genRandomCust;
 capitolHill.genRandomCust = genRandomCust;
 alki.genRandomCust = genRandomCust;
+
+function cookiesPerHour() {
+  return this.genRandomCust * this.avgCookiesPerCust;
+}
+
+firstAndPike.cookiesPerHour = cookiesPerHour;
+seaTacAirport.cookiesPerHour = cookiesPerHour;
+seattleCenter.cookiesPerHour = cookiesPerHour;
+capitolHill.cookiesPerHour = cookiesPerHour;
+alki.cookiesPerHour = cookiesPerHour;
 
 document.onload = function() {
     //create for loop to generate list elements
