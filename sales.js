@@ -9,7 +9,7 @@ function Store(locString, minCustomers, maxCustomers, avgCookiesPerCust) {
 
   /*  will contain pregenerated strings to be created as text nodes, following format:
       6am: 315 cookies  */
-  this.salesOutputArray = []; 
+  this.salesOutputArray = [];
 
   /*  generates number of customers */
   this.genRandomCust = function() {
@@ -122,7 +122,8 @@ function insertNodeWithText (target, nodeType, textInput) {
 var superStore = [firstAndPike,seaTacAirport,seattleCenter,capitolHill,alki]; //IMPORTANT: index of all Store objects
 
 /*  WILL NOT WORK IF NODE PASSED DIRECTLY TO, USE ID INSTEAD
-    Used to recursively add elements. Must make generic and adapt to tables rather than lists. */
+    Used to recursively add elements. Must make generic and adapt to tables rather than lists.
+    Still coupled with Store objects. */
 function insertUlLiIter (target, objIndex) { //takes wrapper as argument, and salesOutputArray to repetitively add li elements
   console.log('FUNCTION_EXECUTE insertUlLiIter()');
 
