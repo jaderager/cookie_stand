@@ -1,6 +1,6 @@
 'use strict';
 
-/*  The all-important Store object  */
+/*  The all-important Store object constructor */
 function Store(locString, minCustomers, maxCustomers, avgCookiesPerCust) {
   this.locString = locString;
   this.minCustomers = minCustomers;
@@ -10,6 +10,8 @@ function Store(locString, minCustomers, maxCustomers, avgCookiesPerCust) {
   /*  will contain pregenerated strings to be created as text nodes, following format:
       6am: 315 cookies  */
   this.salesOutputArray = [];
+
+  var gen
 
   /*  generates number of customers */
   this.genRandomCust = function() {
@@ -26,22 +28,9 @@ function Store(locString, minCustomers, maxCustomers, avgCookiesPerCust) {
   this.genHourlySales = function genHourlySales() {
 
     for (var i = 6; i <= 20; i++) {
-      var amPmFlag; //12hr am/pm bit
-      var twelveHourTime; //12hr hour value
       var workingString = ''; //temp string
 
-      if (i < 12) { //if before noon...
-        amPmFlag = 0;
-        twelveHourTime = i;
-      } else if (i === 12) { //if noon...
-        amPmFlag = 1;
-        twelveHourTime = 12; //naturally. value of 0 for below calc would not work.
-      } else {
-        amPmFlag = 1;
-        twelveHourTime = i - 12; //convert to 12hr. does not work at noon
-      } //don't need to make it work for midnight, outside store hours. I'm sure this will become its own Y2K (T2400?) bug should the owner decide to expand business hours to a 24/7 model.
-
-      /*  begin building string. mock string output follows  */
+      /*  begin building string. mock string output follows in comments */
       workingString += twelveHourTime; // '6'
       if (!amPmFlag) {
         workingString += 'am: '; // '6' + 'am: '
@@ -53,25 +42,54 @@ function Store(locString, minCustomers, maxCustomers, avgCookiesPerCust) {
 
       this.salesOutputArray.push(workingString); //finally, push complete string to corresponding hour index of salesOutputArray
     }
-  };
 
+  };
   this.genHourlySales(); //initialize salesOutputArray
 }
 
+
+
+/*  Initialize Store objects  */
 var firstAndPike = new Store('1st and Pike', //locString
-23,65,6.3); //minCustomers, maxCustomers, avgCookiesPerCust
+23, 65, 6.3); //minCustomers, maxCustomers, avgCookiesPerCust
 
 var seaTacAirport = new Store('SeaTac Airport', //locString
-3,24,1.2); //minCustomers, maxCustomers, avgCookiesPerCust
+3, 24, 1.2); //minCustomers, maxCustomers, avgCookiesPerCust
 
 var seattleCenter = new Store('Seattle Center', //locString
-11,38,3.7); //minCustomers, maxCustomers, avgCookiesPerCust
+11, 38, 3.7); //minCustomers, maxCustomers, avgCookiesPerCust
 
 var capitolHill = new Store('Capitol Hill',
-20,38,2.3); //minCustomers, maxCustomers, avgCookiesPerCust
+20, 38, 2.3); //minCustomers, maxCustomers, avgCookiesPerCust
 
 var alki = new Store('Alki', //locString
-2,16,4.6); //minCustomers, maxCustomers, avgCookiesPerCust
+2, 16, 4.6); //minCustomers, maxCustomers, avgCookiesPerCust
+
+var superStore = [firstAndPike,seaTacAirport,seattleCenter,capitolHill,alki]; //IMPORTANT: index of all Store objects
+
+/*  GENERIC PARSING FUNCTIONS   */
+function parseHr12 (hr24) {
+  var amPmFlag; //12hr am/pm bit
+  var hr12; //12hr hour value
+
+  if (hr24 < 12) { //if before noon...
+    amPmFlag = 0;
+    hr12 = hr24;
+  } else if (hr24 === 12) { //if noon...
+    amPmFlag = 1;
+    hr12 = 12; //naturally. value of 0 for below calc would not work.
+  } else {
+    amPmFlag = 1;
+    hr12 = hr24 - 12; //convert to 12hr. does not work at noon
+  } //don't need to make it work for midnight, outside store hours. I'm sure this will become its own Y2K (T2400?) bug should the owner decide to expand business hours to a 24/7 model.
+
+  return [hr12, amPmFlag];
+}
+
+/*  GENERIC DOM MANIPULATION FUNCTIONS  */
+/*  Note to self: consider removing parameter type analysis in favor of accepting only direct nodes, do all node selection at function call.
+    e.g. insertNode(document.getElementById('htmlId'), 'li')
+    This will avoid redundancy and improve performance, at cost of...? Readability? Think on it. */
 
 /*  Inserts node of element type nodeType as child of target. */
 function insertNode (target, nodeType) {
@@ -115,16 +133,16 @@ function insertNodeWithText (target, nodeType, textInput) {
   newNode.appendChild(newTextNode);
   console.log('insertNodeWithText() :: appending newNode ' + newNode + ' to targetNode ' + targetNodeObj);
   targetNodeObj.appendChild(newNode);
-  console.log('insertNodeWithText() :: RETURN lastChild ' + targetNodeObj.lastChild + 'of targetNode ' + targetNodeObj);
+  console.log('insertNodeWithText() :: RETURN lastChild (' + targetNodeObj.lastChild + ') of targetNode (' + targetNodeObj + ')');
   return targetNodeObj.lastChild; //this is the reason we check the typeof target. somewhere in the chain of calls it can break if a DOM node is being passed to a function such as this one which expects a string referencing an HTML id.
 }
 
-var superStore = [firstAndPike,seaTacAirport,seattleCenter,capitolHill,alki]; //IMPORTANT: index of all Store objects
+/*  MAIN EXECUTION  */
 
 /*  WILL NOT WORK IF NODE PASSED DIRECTLY TO, USE ID INSTEAD
-    Used to recursively add elements. Must make generic and adapt to tables rather than lists.
-    Still coupled with Store objects. */
-function insertUlLiIter (target, objIndex) { //takes wrapper as argument, and salesOutputArray to repetitively add li elements
+    Used to recursively add elements.
+    Tightly coupled with Store objects, only a wrapper function.  */
+function generateSalesOutput (target, objIndex) { //takes wrapper as argument, and salesOutputArray to repetitively add li elements
   console.log('FUNCTION_EXECUTE insertUlLiIter()');
 
   var targetSectionNodeObj = document.getElementById(target);
@@ -146,11 +164,10 @@ function insertUlLiIter (target, objIndex) { //takes wrapper as argument, and sa
 
 
 
-/* I'm using this function as a wrapper with the onload HTML attr to ensure all list elements are extant by the time it executes. The linter doesn't recognize that it's being used that way. */
+/*I'm using this function as a wrapper with the onload HTML attr to ensure all list elements are extant by the time it executes. The linter doesn't recognize that it's being used that way.*/
 function execUponLoad() { //eslint-disable-line
   console.log('document loaded');
 
-  //Previosly iterated through index of Store objects, doing manually while debugging for readability
-  insertUlLiIter('salesSection', superStore);
+  generateSalesOutput('salesSection', superStore);
 
 }
