@@ -7,8 +7,6 @@ function Store(locString, minCustomers, maxCustomers, avgCookiesPerCust) {
   this.maxCustomers = maxCustomers;
   this.avgCookiesPerCust = avgCookiesPerCust;
 
-  /*  will contain pregenerated strings to be created as text nodes, following format:
-      6am: 315 cookies  */
   this.salesOutputArray = [];
 
   /*  generates number of customers */
@@ -20,33 +18,41 @@ function Store(locString, minCustomers, maxCustomers, avgCookiesPerCust) {
 
   /*  multiply number of customers by rate */
   this.cookiesPerHour = function cookiesPerHour() {
-    return this.genRandomCust() * this.avgCookiesPerCust;
+    return Math.round(this.genRandomCust() * this.avgCookiesPerCust);
   };
 
-  this.genHourlySales = function genHourlySales() {
+  this.genSalesStrings = function genSalesStrings() {
 
     for (var i = 6; i <= 20; i++) {
-      var workingString = ''; //temp string
-      var time = parseHr12(i);
+      this.salesOutputArray.push(this.cookiesPerHour());
+    }
+    console.log('.genSalesStrings() :: finished building salesOutputArray: ' + this.salesOutputArray);
+  };
+  this.genSalesStrings();
+}
+/*  will contain pregenerated strings to be created as text nodes, following format:
+    6am: 315 cookies  */
 
-      /*  begin building string. mock string output follows in comments */
-      workingString += time[0]; // '6'
-      if (!time[1]) {
-        workingString += 'am: '; // '6' + 'am: '
-      } else if (time[1]) {
-        workingString += 'pm: '; // '6' + 'pm: '
-      }
+Store.prototype.headingOutputArray = [];
+Store.prototype.genHeadingStrings = function genHeadingStrings() {
 
-      workingString += this.cookiesPerHour() + ' cookies'; // '6' + ( 'am: ' || 'pm: ' ) + n + ' cookies'
+  for (var i = 6; i <= 20; i++) {
+    var workingString = ''; //temp string
+    var time = parseHr12(i);
 
-      this.salesOutputArray.push(workingString); //finally, push complete string to corresponding hour index of salesOutputArray
+    /*  begin building string. mock string output follows in comments */
+    workingString += time[0]; // '6'
+    if (!time[1]) {
+      workingString += ':00am'; // '6' + 'am: '
+    } else if (time[1]) {
+      workingString += ':00pm'; // '6' + 'pm: '
     }
 
-  };
-  this.genHourlySales(); //initialize salesOutputArray
-}
-
-
+    this.headingOutputArray.push(workingString); //finally, push complete string
+  }
+  console.log('.genHeadingStrings() :: finished building headingOutputArray: ' + this.headingOutputArray);
+};
+Store.prototype.genHeadingStrings();
 
 /*  Initialize Store objects  */
 var firstAndPike = new Store('1st and Pike', //locString
@@ -107,7 +113,7 @@ function insertNode (target, nodeType) {
   newNode = document.createElement(nodeType);
 
   targetNodeObj.appendChild(newNode);
-  console.log('returning lastChild ' + targetNodeObj.lastChild + 'of targetNode ' + targetNodeObj);
+  console.log('insertNode() :: RETURN lastChild ' + targetNodeObj.lastChild + 'of targetNode ' + targetNodeObj);
   return targetNodeObj.lastChild; //this is the reason we check the typeof target. somewhere in the chain of calls it can break if a DOM node is being passed to a function such as this one which expects a string referencing an HTML id.
 }
 
@@ -141,22 +147,40 @@ function insertNodeWithText (target, nodeType, textInput) {
 /*  WILL NOT WORK IF NODE PASSED DIRECTLY TO, USE ID INSTEAD
     Used to recursively add elements.
     Tightly coupled with Store objects, only a wrapper function.  */
-function generateSalesOutput (target, objIndex) { //takes wrapper as argument, and salesOutputArray to repetitively add li elements
-  console.log('FUNCTION_EXECUTE insertUlLiIter()');
+function generateSalesElements (target, objIndex) { //takes wrapper element as argument
+  console.log('generateSalesElements() :: FUNCTION_EXECUTE');
 
   var targetSectionNodeObj = document.getElementById(target);
-  var targetUlNodeObj;
+  var targetTableNodeObj;
+  var targetTableRowNodeObj;
 
-  for (var i = 0; i < objIndex.length; i++) {
+  //must generate new table object and capture for rest of function to use
+  targetTableNodeObj = insertNode(targetSectionNodeObj, 'table');
 
-    insertNodeWithText(targetSectionNodeObj, 'h1', objIndex[i].locString);
-    targetUlNodeObj = insertNode(targetSectionNodeObj, 'ul'); //not only append ul element to targetNodeObj, but pass its new child node(HTML Obj) to targetUl for future appending to
+  /*  GENERATE TABLE HEADING  */
+  //create corner cell...
+  targetTableRowNodeObj = insertNode(targetTableNodeObj, 'tr');
+  insertNode(targetTableRowNodeObj, 'td');
 
-    for (var j = 0; j < objIndex[i].salesOutputArray.length; j++) {
+  //fill out rest of table heading
+  for (var i = 0; i < Store.prototype.headingOutputArray.length; i++) {
+    insertNodeWithText(targetTableRowNodeObj, 'td', Store.prototype.headingOutputArray[i]);
+  }
 
-      insertNodeWithText(targetUlNodeObj, 'li', objIndex[i].salesOutputArray[j]);
+  //now we have to generate as many table rows as there are stores...
+  for (i = 0; i < (objIndex.length); i++) {
 
+
+    targetTableRowNodeObj = insertNode(targetTableNodeObj, 'tr'); //begin row
+    insertNodeWithText(targetTableRowNodeObj, 'td', objIndex[i].locString); //create first cell with store location name
+
+    //while generate a row, make sure to add TDs
+    for (var j = 0; j < (objIndex[i].salesOutputArray.length); j++) {
+      insertNodeWithText(targetTableRowNodeObj, 'td', objIndex[i].salesOutputArray[j]);
     }
+
+    /* insertNodeWithText(targetSectionNodeObj, 'h1', objIndex[i].locString);
+    targetUlNodeObj = insertNode(targetSectionNodeObj, 'ul'); //not only append ul element to targetNodeObj, but pass its new child node(HTML Obj) to targetUl for future appending to */
   }
   console.log('FUNCTION_BREAK insertUlLiIter()');
 }
@@ -167,6 +191,6 @@ function generateSalesOutput (target, objIndex) { //takes wrapper as argument, a
 function execUponLoad() { //eslint-disable-line
   console.log('document loaded');
 
-  generateSalesOutput('salesSection', superStore);
+  generateSalesElements('salesSection', superStore);
 
 }
