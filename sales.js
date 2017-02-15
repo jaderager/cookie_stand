@@ -11,8 +11,6 @@ function Store(locString, minCustomers, maxCustomers, avgCookiesPerCust) {
       6am: 315 cookies  */
   this.salesOutputArray = [];
 
-  var gen
-
   /*  generates number of customers */
   this.genRandomCust = function() {
     var min = Math.ceil(this.minCustomers);
@@ -29,12 +27,13 @@ function Store(locString, minCustomers, maxCustomers, avgCookiesPerCust) {
 
     for (var i = 6; i <= 20; i++) {
       var workingString = ''; //temp string
+      var time = parseHr12(i);
 
       /*  begin building string. mock string output follows in comments */
-      workingString += twelveHourTime; // '6'
-      if (!amPmFlag) {
+      workingString += time[0]; // '6'
+      if (!time[1]) {
         workingString += 'am: '; // '6' + 'am: '
-      } else if (amPmFlag) {
+      } else if (time[1]) {
         workingString += 'pm: '; // '6' + 'pm: '
       }
 
