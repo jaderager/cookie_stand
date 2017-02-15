@@ -5,3 +5,7 @@
     background-color: salmon;
     color: black;
 }
+
+ul {
+    border: 2px solid black;
+}

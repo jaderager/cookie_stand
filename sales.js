@@ -1,21 +1,24 @@
 'use strict';
 
-//define objects
-
-function Store(locstring, minCustomers, maxCustomers, avgCookiesPerCust, salesUlId) {
-  this.locstring = locstring;
+/*  The all-important Store object  */
+function Store(locString, minCustomers, maxCustomers, avgCookiesPerCust) {
+  this.locString = locString;
   this.minCustomers = minCustomers;
   this.maxCustomers = maxCustomers;
   this.avgCookiesPerCust = avgCookiesPerCust;
-  this.salesUlId = salesUlId;
-  this.salesArray = [];
 
+  /*  will contain pregenerated strings to be created as text nodes, following format:
+      6am: 315 cookies  */
+  this.salesOutputArray = []; 
+
+  /*  generates number of customers */
   this.genRandomCust = function() {
     var min = Math.ceil(this.minCustomers);
     var max = Math.floor(this.maxCustomers);
     return Math.floor(Math.random() * (max + 1 - min) + min);
   };
 
+  /*  multiply number of customers by rate */
   this.cookiesPerHour = function cookiesPerHour() {
     return this.genRandomCust() * this.avgCookiesPerCust;
   };
@@ -27,10 +30,10 @@ function Store(locstring, minCustomers, maxCustomers, avgCookiesPerCust, salesUl
       var twelveHourTime; //12hr hour value
       var workingString = ''; //temp string
 
-      if (i < 12) { //if before noon
+      if (i < 12) { //if before noon...
         amPmFlag = 0;
         twelveHourTime = i;
-      } else if (i === 12) { //if noon
+      } else if (i === 12) { //if noon...
         amPmFlag = 1;
         twelveHourTime = 12; //naturally. value of 0 for below calc would not work.
       } else {
@@ -38,74 +41,115 @@ function Store(locstring, minCustomers, maxCustomers, avgCookiesPerCust, salesUl
         twelveHourTime = i - 12; //convert to 12hr. does not work at noon
       } //don't need to make it work for midnight, outside store hours. I'm sure this will become its own Y2K (T2400?) bug should the owner decide to expand business hours to a 24/7 model.
 
-      workingString += twelveHourTime; //6 ...
+      /*  begin building string. mock string output follows  */
+      workingString += twelveHourTime; // '6'
       if (!amPmFlag) {
-        workingString += 'am: '; //6am: ...
+        workingString += 'am: '; // '6' + 'am: '
       } else if (amPmFlag) {
-        workingString += 'pm: '; //6pm: ...
+        workingString += 'pm: '; // '6' + 'pm: '
       }
 
-      workingString += this.cookiesPerHour() + ' cookies'; //6xm: __ cookies
+      workingString += this.cookiesPerHour() + ' cookies'; // '6' + ( 'am: ' || 'pm: ' ) + n + ' cookies'
 
-      this.salesArray.push(workingString);
+      this.salesOutputArray.push(workingString); //finally, push complete string to corresponding hour index of salesOutputArray
     }
   };
+
+  this.genHourlySales(); //initialize salesOutputArray
 }
 
-var firstAndPike = new Store('1st and Pike',
-23,65,6.3,
-'firstAndPikeSalesList');
+var firstAndPike = new Store('1st and Pike', //locString
+23,65,6.3); //minCustomers, maxCustomers, avgCookiesPerCust
 
-var seaTacAirport = new Store('SeaTac Airport',
-3,24,1.2,
-'seattleCenterSalesList');
+var seaTacAirport = new Store('SeaTac Airport', //locString
+3,24,1.2); //minCustomers, maxCustomers, avgCookiesPerCust
 
-var seattleCenter = new Store('seattle Center',
-11,38,3.7,
-'seattleCenterSalesList');
+var seattleCenter = new Store('Seattle Center', //locString
+11,38,3.7); //minCustomers, maxCustomers, avgCookiesPerCust
 
 var capitolHill = new Store('Capitol Hill',
-20,38,2.3,
-'capitolHillSalesList');
+20,38,2.3); //minCustomers, maxCustomers, avgCookiesPerCust
 
-var alki = new Store('Alki',
-2,16,4.6,
-'alkiSalesList');
+var alki = new Store('Alki', //locString
+2,16,4.6); //minCustomers, maxCustomers, avgCookiesPerCust
 
-//actually assign values to respective salesArray 's
-firstAndPike.genHourlySales();
-seaTacAirport.genHourlySales();
-seattleCenter.genHourlySales();
-capitolHill.genHourlySales();
-alki.genHourlySales();
+/*  Inserts node of element type nodeType as child of target. */
+function insertNode (target, nodeType) {
+  console.log('FUNCTION_EXECUTE insertNode(' + target + ',' + nodeType + ')');
+  console.log('insertNode() :: typeof target parameter is ' + typeof target);
 
-function insertLiIntoUlIter (ulId, array) {
-  console.log('begin insertLiIntoUlIter');
-  var caUl = document.getElementById(ulId);
-  console.log('create var caUl with val ' + caUl);
-  var newLiNode;
-  var newLiTextNode;
+  var targetNodeObj;
+  var newNode;
 
-  console.log('begin insertLiIntoUl for loop');
-  for (var i = 0; i < array.length; i++) {
-    console.log('ITERATION ' + i);
-    newLiNode = document.createElement('li');
-    console.log('assign var newLiNode with val ' + newLiNode);
-    newLiTextNode = document.createTextNode(array[i]);
-    console.log('assign new var newLiNode with val ' + newLiNode);
-    newLiNode.appendChild(newLiTextNode);
-    caUl.appendChild(newLiNode);
+  if (typeof target === 'string') { //if passing target id of a node
+    targetNodeObj = document.getElementById(target);
+  } else if (typeof target === 'object') { //if directly passing node
+    targetNodeObj = target;
   }
-  console.log('exit insertLiIntoUlIter');
+
+  newNode = document.createElement(nodeType);
+
+  targetNodeObj.appendChild(newNode);
+  console.log('returning lastChild ' + targetNodeObj.lastChild + 'of targetNode ' + targetNodeObj);
+  return targetNodeObj.lastChild; //this is the reason we check the typeof target. somewhere in the chain of calls it can break if a DOM node is being passed to a function such as this one which expects a string referencing an HTML id.
 }
+
+/*  As above, but creates a child text node.  */
+function insertNodeWithText (target, nodeType, textInput) {
+  console.log('insertNodeWithText() :: FUNCTION_EXECUTE(' + target + ',' + nodeType + ',' + textInput + ')');
+  console.log('insertNodeWithText() :: typeof target parameter is ' + typeof target);
+
+  var targetNodeObj;
+  var newNode;
+  var newTextNode;
+
+  if (typeof target === 'string') { //if passing target id of a node
+    targetNodeObj = document.getElementById(target);
+  } else if (typeof target === 'object') { //if directly passing node
+    targetNodeObj = target;
+  }
+
+  newNode = document.createElement(nodeType);
+  newTextNode = document.createTextNode(textInput);
+
+  newNode.appendChild(newTextNode);
+  console.log('insertNodeWithText() :: appending newNode ' + newNode + ' to targetNode ' + targetNodeObj);
+  targetNodeObj.appendChild(newNode);
+  console.log('insertNodeWithText() :: RETURN lastChild ' + targetNodeObj.lastChild + 'of targetNode ' + targetNodeObj);
+  return targetNodeObj.lastChild; //this is the reason we check the typeof target. somewhere in the chain of calls it can break if a DOM node is being passed to a function such as this one which expects a string referencing an HTML id.
+}
+
+var superStore = [firstAndPike,seaTacAirport,seattleCenter,capitolHill,alki]; //IMPORTANT: index of all Store objects
+
+/*  WILL NOT WORK IF NODE PASSED DIRECTLY TO, USE ID INSTEAD
+    Used to recursively add elements. Must make generic and adapt to tables rather than lists. */
+function insertUlLiIter (target, objIndex) { //takes wrapper as argument, and salesOutputArray to repetitively add li elements
+  console.log('FUNCTION_EXECUTE insertUlLiIter()');
+
+  var targetSectionNodeObj = document.getElementById(target);
+  var targetUlNodeObj;
+
+  for (var i = 0; i < objIndex.length; i++) {
+
+    insertNodeWithText(targetSectionNodeObj, 'h1', objIndex[i].locString);
+    targetUlNodeObj = insertNode(targetSectionNodeObj, 'ul'); //not only append ul element to targetNodeObj, but pass its new child node(HTML Obj) to targetUl for future appending to
+
+    for (var j = 0; j < objIndex[i].salesOutputArray.length; j++) {
+
+      insertNodeWithText(targetUlNodeObj, 'li', objIndex[i].salesOutputArray[j]);
+
+    }
+  }
+  console.log('FUNCTION_BREAK insertUlLiIter()');
+}
+
+
 
 /* I'm using this function as a wrapper with the onload HTML attr to ensure all list elements are extant by the time it executes. The linter doesn't recognize that it's being used that way. */
 function execUponLoad() { //eslint-disable-line
   console.log('document loaded');
 
-  insertLiIntoUlIter(firstAndPike.salesUlId, firstAndPike.salesArray);
-  insertLiIntoUlIter(seaTacAirport.salesUlId, seaTacAirport.salesArray);
-  insertLiIntoUlIter(seattleCenter.salesUlId, seattleCenter.salesArray);
-  insertLiIntoUlIter(capitolHill.salesUlId, capitolHill.salesArray);
-  insertLiIntoUlIter(alki.salesUlId, alki.salesArray);
+  //Previosly iterated through index of Store objects, doing manually while debugging for readability
+  insertUlLiIter('salesSection', superStore);
+
 }
