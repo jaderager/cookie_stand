@@ -26,14 +26,16 @@ function Store(locString, minCustomers, maxCustomers, avgCookiesPerCust) {
     for (var i = 6; i <= 20; i++) {
       this.salesOutputArray.push(this.cookiesPerHour());
     }
+
     console.log('.genSalesStrings() :: finished building salesOutputArray: ' + this.salesOutputArray);
+
   };
   this.genSalesStrings();
 }
 /*  will contain pregenerated strings to be created as text nodes, following format:
     6am: 315 cookies  */
 
-Store.prototype.headingOutputArray = [];
+Store.prototype.hoursOutputArray = [];
 Store.prototype.genHeadingStrings = function genHeadingStrings() {
 
   for (var i = 6; i <= 20; i++) {
@@ -48,9 +50,9 @@ Store.prototype.genHeadingStrings = function genHeadingStrings() {
       workingString += ':00pm'; // '6' + 'pm: '
     }
 
-    this.headingOutputArray.push(workingString); //finally, push complete string
+    this.hoursOutputArray.push(workingString); //finally, push complete string
   }
-  console.log('.genHeadingStrings() :: finished building headingOutputArray: ' + this.headingOutputArray);
+  console.log('.genHeadingStrings() :: finished building hoursOutputArray: ' + this.hoursOutputArray);
 };
 Store.prototype.genHeadingStrings();
 
@@ -69,8 +71,6 @@ var capitolHill = new Store('Capitol Hill',
 
 var alki = new Store('Alki', //locString
 2, 16, 4.6); //minCustomers, maxCustomers, avgCookiesPerCust
-
-var superStore = [firstAndPike,seaTacAirport,seattleCenter,capitolHill,alki]; //IMPORTANT: index of all Store objects
 
 /*  GENERIC PARSING FUNCTIONS   */
 function parseHr12 (hr24) {
@@ -91,106 +91,139 @@ function parseHr12 (hr24) {
   return [hr12, amPmFlag];
 }
 
-/*  GENERIC DOM MANIPULATION FUNCTIONS  */
-/*  Note to self: consider removing parameter type analysis in favor of accepting only direct nodes, do all node selection at function call.
-    e.g. insertNode(document.getElementById('htmlId'), 'li')
-    This will avoid redundancy and improve performance, at cost of...? Readability? Think on it. */
-
-/*  Inserts node of element type nodeType as child of target. */
-function insertNode (target, nodeType) {
-  console.log('FUNCTION_EXECUTE insertNode(' + target + ',' + nodeType + ')');
-  console.log('insertNode() :: typeof target parameter is ' + typeof target);
-
-  var targetNodeObj;
-  var newNode;
-
-  if (typeof target === 'string') { //if passing target id of a node
-    targetNodeObj = document.getElementById(target);
-  } else if (typeof target === 'object') { //if directly passing node
-    targetNodeObj = target;
-  }
-
-  newNode = document.createElement(nodeType);
-
-  targetNodeObj.appendChild(newNode);
-  console.log('insertNode() :: RETURN lastChild ' + targetNodeObj.lastChild + 'of targetNode ' + targetNodeObj);
-  return targetNodeObj.lastChild; //this is the reason we check the typeof target. somewhere in the chain of calls it can break if a DOM node is being passed to a function such as this one which expects a string referencing an HTML id.
-}
-
-/*  As above, but creates a child text node.  */
-function insertNodeWithText (target, nodeType, textInput) {
-  console.log('insertNodeWithText() :: FUNCTION_EXECUTE(' + target + ',' + nodeType + ',' + textInput + ')');
-  console.log('insertNodeWithText() :: typeof target parameter is ' + typeof target);
-
-  var targetNodeObj;
-  var newNode;
-  var newTextNode;
-
-  if (typeof target === 'string') { //if passing target id of a node
-    targetNodeObj = document.getElementById(target);
-  } else if (typeof target === 'object') { //if directly passing node
-    targetNodeObj = target;
-  }
-
-  newNode = document.createElement(nodeType);
-  newTextNode = document.createTextNode(textInput);
-
-  newNode.appendChild(newTextNode);
-  console.log('insertNodeWithText() :: appending newNode ' + newNode + ' to targetNode ' + targetNodeObj);
-  targetNodeObj.appendChild(newNode);
-  console.log('insertNodeWithText() :: RETURN lastChild (' + targetNodeObj.lastChild + ') of targetNode (' + targetNodeObj + ')');
-  return targetNodeObj.lastChild; //this is the reason we check the typeof target. somewhere in the chain of calls it can break if a DOM node is being passed to a function such as this one which expects a string referencing an HTML id.
-}
-
 /*  MAIN EXECUTION  */
 
 /*  WILL NOT WORK IF NODE PASSED DIRECTLY TO, USE ID INSTEAD
     Used to recursively add elements.
     Tightly coupled with Store objects, only a wrapper function.  */
-function generateSalesElements (target, objIndex) { //takes wrapper element as argument
-  console.log('generateSalesElements() :: FUNCTION_EXECUTE');
 
-  var targetSectionNodeObj = document.getElementById(target);
-  var targetTableNodeObj;
-  var targetTableRowNodeObj;
+function DOMNode() {
+  /*  GENERIC DOM MANIPULATION FUNCTIONS  */
+  /*  Note to self: consider removing parameter type analysis in favor of accepting only direct nodes, do all node selection at function call.
+    e.g. insertNode(document.getElementById('htmlId'), 'li')
+    This will avoid redundancy and improve performance, at cost of...? Readability? Think on it. */
 
-  //must generate new table object and capture for rest of function to use
-  targetTableNodeObj = insertNode(targetSectionNodeObj, 'table');
+  this.targetParentNodeRef;
+  this.selfNodeRef;
+  this.childNodeRef;
 
-  /*  GENERATE TABLE HEADING  */
-  //create corner cell...
-  targetTableRowNodeObj = insertNode(targetTableNodeObj, 'tr');
-  insertNode(targetTableRowNodeObj, 'td');
+  this.attachToNode = function (become) {
+    this.selfNodeRef = become;
+  };
 
-  //fill out rest of table heading
-  for (var i = 0; i < Store.prototype.headingOutputArray.length; i++) {
-    insertNodeWithText(targetTableRowNodeObj, 'td', Store.prototype.headingOutputArray[i]);
-  }
+  /*  Inserts node of element type nodeType as child of target. */
+  this.insertNode = function(nodeType) {
+    // console.log('FUNCTION_EXECUTE insertNode(' + target + ',' + nodeType + ')');
+    // console.log('insertNode() :: typeof target parameter is ' + typeof target);
 
-  //now we have to generate as many table rows as there are stores...
-  for (i = 0; i < (objIndex.length); i++) {
+    var newNode;
+    newNode = document.createElement(nodeType);
+    this.selfNodeRef.appendChild(newNode);
+    // console.log('insertNode() :: RETURN lastChild ' + targetNodeObj.lastChild + 'of targetNode ' + targetNodeObj);
+    this.childNodeRef = this.selfNodeRef.lastChild;
+    console.log('DOMNode.insertNode() :: context of this: ' + this);
+  };
 
+  /*  As above, but creates a child text node.  */
+  this.insertNodeWithText = function(nodeType, textInput) {
+    // console.log('insertNodeWithText() :: FUNCTION_EXECUTE(' + target + ',' + nodeType + ',' + textInput + ')');
+    // console.log('insertNodeWithText() :: typeof target parameter is ' + typeof target);
 
-    targetTableRowNodeObj = insertNode(targetTableNodeObj, 'tr'); //begin row
-    insertNodeWithText(targetTableRowNodeObj, 'td', objIndex[i].locString); //create first cell with store location name
-
-    //while generate a row, make sure to add TDs
-    for (var j = 0; j < (objIndex[i].salesOutputArray.length); j++) {
-      insertNodeWithText(targetTableRowNodeObj, 'td', objIndex[i].salesOutputArray[j]);
-    }
-
-    /* insertNodeWithText(targetSectionNodeObj, 'h1', objIndex[i].locString);
-    targetUlNodeObj = insertNode(targetSectionNodeObj, 'ul'); //not only append ul element to targetNodeObj, but pass its new child node(HTML Obj) to targetUl for future appending to */
-  }
-  console.log('FUNCTION_BREAK insertUlLiIter()');
+    var newNode;
+    var newTextNode;
+    newNode = document.createElement(nodeType);
+    newTextNode = document.createTextNode(textInput);
+    newNode.appendChild(newTextNode);
+    // console.log('insertNodeWithText() :: appending newNode ' + newNode + ' to targetNode ' + targetNodeObj);
+    this.selfNodeRef.appendChild(newNode);
+    // console.log('insertNodeWithText() :: RETURN lastChild (' + targetNodeObj.lastChild + ') of targetNode (' + targetNodeObj + ')');
+    this.childNodeRef = this.selfNodeRef.lastChild;
+  };
 }
 
+function SalesTable (targetParentNodeRef) {
+  this.targetParentNodeRef = targetParentNodeRef; //parent <section>
+  this.superStore; //IMPORTANT: index of all Store objects
+  this.salesTableNodeRef;
+  this.currentRowObj;
+
+  this.lastIndexPos;
+
+  this.superStore = [firstAndPike,seaTacAirport,seattleCenter,capitolHill,alki];
+
+  this.addUserStore = function(locString, minCustomers, maxCustomers, avgCookiesPerCust) {
+    this.superStore.push(new Store(locString, minCustomers, maxCustomers, avgCookiesPerCust));
+    this.lastIndexPos = this.superStore.length - 1;
+    console.log('.addUserStore() :: new Store object pushed to .superStore: ' + this.superStore[this.lastIndexPos]);
+    this.appendToSalesTable(this.lastIndexPos);
+  };
+
+  this.initializeSalesTable = function() {
+    console.log('generateSalesElements() :: FUNCTION_EXECUTE');
+
+    this.wrapperSectionObj = new DOMNode(); //FIRST, create pointer object
+    this.wrapperSectionObj.attachToNode(targetParentNodeRef); //SECOND, affix to DOM Node. Now contains a mirror reference.
+
+    /*  BEGIN TABLE GENERATE  */
+    this.wrapperSectionObj.insertNode('table'); //THIRD, insert a child table node beneath it
+    this.tableObj = new DOMNode();
+    this.tableObj.attachToNode(this.wrapperSectionObj.childNodeRef);
+
+    /*  GENERATE TABLE HEADING  */
+    this.tableObj.insertNode('tr');
+    this.currentRowObj = new DOMNode();
+    this.currentRowObj.attachToNode(this.tableObj.childNodeRef);
+
+    this.currentRowObj.insertNode('td'); //create corner cell...
+
+    //fill out rest of table heading
+    for (var i = 0; i < Store.prototype.hoursOutputArray.length; i++) {
+      this.currentRowObj.insertNodeWithText('td', Store.prototype.hoursOutputArray[i]);
+    }
+  };
+
+  this.appendToSalesTable = function(startIndex) {
+    console.log('.appendToSalesTable() :: FUNCTION_EXECUTE');
+    //now we have to generate as many table rows as there are stores...
+    for (var i = startIndex; i < (this.superStore.length); i++) {
+
+      this.tableObj.insertNode('tr'); //begin row
+      this.currentRowObj.attachToNode(this.tableObj.childNodeRef);
+      this.currentRowObj.insertNodeWithText('td', this.superStore[i].locString);
+
+      //while generating a row, make sure to add TDs
+      for (var j = 0; j < (this.superStore[i].salesOutputArray.length); j++) {
+        this.currentRowObj.insertNodeWithText('td', this.superStore[i].salesOutputArray[j]);
+      }
+    }
+    console.log('.initializeSalesTable() :: FUNCTION_BREAK');
+  }; //.initializeSalesTable
+  this.initializeSalesTable();
+  this.appendToSalesTable(0);
+
+} //SalesSection
+
+SalesTable.prototype = Object.create(DOMNode.prototype);
+
+document.addEventListener('DOMContentLoaded', execUponLoad);
+function execUponLoad() {
+
+  console.log('execUponLoad() :: DOMContentLoaded FIRED');
 
 
-/*I'm using this function as a wrapper with the onload HTML attr to ensure all list elements are extant by the time it executes. The linter doesn't recognize that it's being used that way.*/
-function execUponLoad() { //eslint-disable-line
-  console.log('document loaded');
+  var myTable = new SalesTable(document.getElementById('salesSection'));
 
-  generateSalesElements('salesSection', superStore);
+  // console.log('forcing .addUserStore');
+  // myTable.addUserStore('location',2,10,5);
 
+  var form = document.getElementById('fid_addStoreForm');
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    myTable.addUserStore(
+      e.target.fn_locString.value,
+      e.target.fn_minCustomers.value,
+      e.target.fn_maxCustomers.value,
+      e.target.fn_avgCookiesPerCust.value
+    );
+  });
 }
