@@ -1,0 +1,71 @@
+* {
+  background-color: #FFBDB3;
+  color: #FFF28C;
+}
+
+.box {
+  background-color: #FFBDB3;
+  color: black;
+}
+
+.box * {
+  background-color: inherit;
+  color: inherit;   
+}
+
+header {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+hr {
+  border-top: 4px dotted;
+}
+
+.myNav {
+  display: inline-block;
+  font-family: 'Caveat Brush', cursive
+}
+
+.pat {
+  font-family: 'Caveat Brush', cursive;
+  text-align: center;
+  text-indent: -54px;
+  line-height: 0px;
+  font-size: 64px;
+  font-style: italic;
+}
+
+.title {
+  font-family: 'Caveat Brush', cursive;
+  letter-spacing: 24px;
+  word-spacing: 8px;
+  line-height: 0px;
+  font-weight: bold;
+  font-size: 32px;
+}
+
+img {
+  margin: auto;
+  display: block;
+}
+
+.spooky {
+  background-color: white;
+  /*background-color: #D1B3FF;*/
+  border-radius: 16px;
+  margin: auto;
+  padding: 16px;
+  padding-bottom: 128px;
+  width: 1200px;
+}
+
+.fishyFooter {
+  background-color: #369661;
+}
+
+/*.fishyImgWrapper {
+  background-color: white;
+  width: 800px;
+  margin: auto;
+}*/
