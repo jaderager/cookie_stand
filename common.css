@@ -3,7 +3,7 @@
   color: #FFF28C;
 }
 
-.box {
+body * {
   background-color: #FFBDB3;
   color: black;
 }
@@ -18,13 +18,53 @@ header {
   margin-bottom: 8px;
 }
 
-hr {
-  border-top: 4px dotted;
+.titleContainer {
+  margin-right: 100px;
 }
 
-.myNav {
+p {
+  background-color: inherit;
+}
+
+.navBox {
+  background-color: #369661;
+  border: 4px solid;
+  background-color: #369661;
+  padding: 4px;
+  width: 1216px;
+  margin: auto;
+}
+
+.navBar * {
   display: inline-block;
-  font-family: 'Caveat Brush', cursive
+  font-family: 'Caveat Brush', cursive;
+  font-size: 24px;
+  margin-right: 24px;
+}
+
+.navBar a:link {
+  /*color: #369661;*/
+  color: #363B96;
+}
+
+a:visited {
+  color: #8533FF;
+}
+
+.pageCol {
+  width: 1232px;
+  margin:auto;
+}
+
+div {
+  overflow: hidden;
+}
+
+.logoImg {
+  float: left;
+  height: 100px;
+  width: 100px;
+  margin: 0px;
 }
 
 .pat {
@@ -48,6 +88,7 @@ hr {
 img {
   margin: auto;
   display: block;
+  background-color: inherit;
 }
 
 .spooky {
@@ -60,8 +101,23 @@ img {
   width: 1200px;
 }
 
+.spooky * {
+  background-color: inherit;
+  color: inherit;
+}
+
+.spooky .bodyText {
+  font-family: Tahoma, Verdana, sans-serif;
+}
+
+.subHeading {
+  text-align: center;
+  font-size: 24px;
+  font-family: 'Caveat Brush', cursive;
+}
+
 .fishyFooter {
-  background-color: #369661;
+  text-align: center;
 }
 
 /*.fishyImgWrapper {
