@@ -7,29 +7,56 @@
     <link href="https://fonts.googleapis.com/css?family=Caveat+Brush" rel="stylesheet">
   </head>
   <body>
-    <section class="box">
+    <div class="pageCol">
       <header>
-        <h1 class="pat">Pat's!</h1>
-        <h2 class="title">Salmon Cookies</h1>
-        <hr>
-        <nav>
-          <ul class="myNav">
-            <li>Blah</li>
-            <li>Bluh</li>
-            <li>Blehh!!</li>
-          </ul>
-        </nav>
-        <hr
+        <a href="index.html"><img class="logoImg" src="cutter.jpg" title="Back to Index!"></a>
+
+        <div class="titleContainer">
+          <h1 class="pat">Pat's!</h1>
+          <h2 class="title">Salmon Cookies</h1>
+        </div>
+        
+        <section class="navBox">
+          <nav class="navBar">
+              <a href="#AboutUs">About US</a><a href="#Merchandise">Merchandise</a><a href="#FanCrafts">Fan Crafts &amp; Art!</a><a href="sales.html">Secret Admin Sales App!</a>
+          </nav>
+        </section>
       </header>
+      
       <section class="spooky">
         <img src="family.jpg">
-        <div class="fishyImgWrapper">
-          <img class="fishyImg" src="salmon.png"><a href="sales.html">Sales</a>
-        </div>
+
+        <h3 id="AboutUs" class="subHeading">About Us</h3>
+        <section class="bodyText">
+          <p><em>What is PSC?</em></p>
+          <p>The only fish-paste-based pastry bakery on the entire planet, that's what! Customers are routinely floored by the delightful sweet and savory combination of our dinner-deserts!</p>
+          <p><em>Who is PSC?</em></p>
+          <p>We're a leading team of avante-garde culinary artists, plus one lovably reluctant, change-fearing mascot!</p>
+        </section>
+
+        <img class="fishyImg" src="salmon.png">
+        <p class="subHeading">"Just because you can do something doesn't mean you should" --Samuel Salmon</p>
+
+        <h3 id="Merchandise" class="subHeading">Merchandise</h3>
+        <img id="fishHead" src=chinook_a.png>
+        <img id="shirt" src="shirt.jpg">
+        <img id ="temmie" src="temmie2.gif">
+        <section class="bodyText">
+          <strong>Sammy Gear is here!</strong>
+          <ul>
+            <li>Sammy Hats!</li>
+            <li>Sammy Shirts!</li>
+          </ul>
+        </section>
+
+        <h3 id="FanCrafts" class="subHeading">Fan Crafts &amp; Art!</h3>
+        <img src="frosted-cookie.jpg">
+        <img src="fish.jpg">
       </section>
-      <p>Pat's Salmon cookies, est. <span class="highlight">2017!</span></p>
+
       <footer class="fishyFooter">
+        <p>Pat's Salmon cookies, est. <span class="highlight">2017!</span></p>
       </footer>
-    </section>
+    </div>
   </body>
 </html>
