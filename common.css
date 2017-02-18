@@ -108,6 +108,7 @@ img {
 
 .spooky .bodyText {
   font-family: Tahoma, Verdana, sans-serif;
+  margin: 32px;
 }
 
 .subHeading {
@@ -119,6 +120,26 @@ img {
 .fishyFooter {
   text-align: center;
 }
+
+#fishHead {
+  width: calc(483px / 2);
+  height: calc(183px / 2);
+  position: relative;
+  top: 20px;
+  background-color: none;
+  background: none;
+}
+
+#shirt {
+  display: inline-block;
+  margin-left: 420px;
+  margin-right: 200px;
+}
+
+#temmie {
+  display: inline-block;
+}
+
 
 /*.fishyImgWrapper {
   background-color: white;
